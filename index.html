@@ -45,7 +45,7 @@
     document.querySelector('#games').innerHTML = levels.map(([file, name, description], i) => `
       <article>
         <h2>${i + 1}. ${name}</h2><p>${description}</p>
-        <div class="actions"><a href="game.html?level=${encodeURIComponent(file)}">Play</a><a class="secondary" href="${file}" download="${file}.py">Python source</a></div>
+        <div class="actions"><a href="${file}.py">Play</a><a class="secondary" href="${file}.py" download="${file}.py">Python source</a></div>
       </article>`).join('');
   </script>
 </body>
