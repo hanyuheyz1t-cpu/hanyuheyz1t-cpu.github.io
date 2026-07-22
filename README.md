@@ -1,52 +1,91 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Three Chambers</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green Block - 游戏运行中</title>
   <style>
     :root { color-scheme: dark; font-family: system-ui, sans-serif; }
-    body { margin: 0; min-height: 100vh; background: radial-gradient(circle at top, #334e8f, #101426 55%); color: #f6f7fb; }
-    main { max-width: 960px; margin: auto; padding: 48px 20px; }
-    h1 { font-size: clamp(2.2rem, 7vw, 4rem); margin: 0; }
-    .lead { color: #cbd5ef; font-size: 1.1rem; max-width: 680px; }
-    .notice { margin: 24px 0; padding: 16px; border-left: 4px solid #76e4b3; background: #17233f; color: #d9f9e9; }
-    .games { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
-    article { display: flex; flex-direction: column; gap: 12px; padding: 20px; border: 1px solid #41527e; border-radius: 14px; background: #1a2340; }
-    article h2, article p { margin: 0; }
-    article p { min-height: 3em; color: #bfc9e3; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
-    a { border-radius: 8px; padding: 9px 12px; color: #fff; text-decoration: none; background: #5e76e6; font-weight: 650; }
-    a.secondary { background: #2a385d; }
-    footer { margin-top: 40px; color: #aeb9d6; }
+    body { margin: 0; background: #101426; color: #f6f7fb; text-align: center; padding: 20px; }
+    #canvas-container {
+      margin: 20px auto;
+      width: 800px;
+      height: 600px;
+      background: #1a2340;
+      border: 2px solid #76e4b3;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    .status { margin-bottom: 15px; color: #cbd5ef; font-size: 1.1rem; }
+    .back-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #5e76e6;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .back-btn:hover { background: #4b62d1; }
   </style>
+
+  <!-- 加载 Skulpt (可以在浏览器中运行 Python 及 turtle 的引擎) -->
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
 </head>
 <body>
-  <main>
-    <h1>Three Chambers</h1>
-    <p class="lead">A browser-ready edition of the Green Block maze series. Choose any level below—this page works through VS Code Live Server and through <code>npm run dev</code>.</p>
-    <p class="notice"><strong>Controls:</strong> W/A/S/D or arrow keys to move. Q pushes an adjacent enemy; E clears an adjacent wall; R restarts. The original Python Turtle source remains available on every card.</p>
-    <section class="games" id="games" aria-label="Game levels"></section>
-    <footer>Original Turtle files require Python 3 and a desktop display; web games run directly in this browser.</footer>
-  </main>
+
+  <a href="index.html" class="back-btn">← 返回关卡列表</a>
+  <div class="status" id="status">正在加载 Python 引擎及关卡文件...</div>
+
+  <!-- Turtle 画布渲染区域 -->
+  <div id="canvas-container">
+    <div id="mycanvas"></div>
+  </div>
+
   <script>
-    const levels = [
-      ['HHHH1.py', 'Power Grid', 'Learn the maze and activate the switches.'],
-      ['HHHH2.py', 'Pure Chase', 'Outrun the enemy in a tighter chamber.'],
-      ['HHHH3.py', 'Frozen Orb', 'Use the frozen orb to escape pursuit.'],
-      ['HHHH4.py', 'Power Grid Plus', 'A tougher power-grid route.'],
-      ['HHHH5.py', 'Shield & Barrier', 'Place barriers and break through.'],
-      ['HHHH6.py', 'Code Gate', 'Find the key and open the final gate.'],
-      ['HHHH7.py', 'Final Gate', 'Survive the first Hell Mode chamber.'],
-      ['HHHH8.py', 'Final Gate Plus', 'More hazards, less room to recover.'],
-      ['HHHH9.py', 'Hell Mode', 'A fast, hostile final maze.'],
-      ['HHHH10.py', 'Hell Mode: Finale', 'The ultimate Three Chambers challenge.']
-    ];
-    document.querySelector('#games').innerHTML = levels.map(([file, name, description], i) => `
-      <article>
-        <h2>${i + 1}. ${name}</h2><p>${description}</p>
-        <div class="actions"><a href="game.html?level=${encodeURIComponent(file)}">Play</a><a class="secondary" href="${file}.py" download="${file}.py">Python source</a></div>
-      </article>`).join('');
+    <div class="actions"><a href="game.html?file=${file}">Play</a><a class="secondary" href="${file}" download="${file}">Python source</a></div>
+    const urlParams = new URLSearchParams(window.location.search);
+    const pyFile = urlParams.get('file');
+
+    if (!pyFile) {
+      document.getElementById('status').innerText = '未找到关卡文件！';
+    } else {
+      document.getElementById('status').innerText = '正在运行: ' + pyFile;
+
+      // 2. 动态读取对应的 .py 代码文件
+      fetch(pyFile)
+        .then(response => {
+          if (!response.ok) throw new Error('网络响应异常，文件可能不存在');
+          return response.text();
+        })
+        .then(code => {
+          // 3. 配置并运行 Skulpt 解释器
+          Sk.python3 = true;
+          Sk.configure({
+            output: function(text) { console.log(text); },
+            read: function(x) {
+              if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+                throw "File not found: '" + x + "'";
+              return Sk.builtinFiles["files"][x];
+            },
+            // 将 turtle 的绘制目标指向 div #mycanvas
+            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas'
+          });
+
+          // 执行 Python 代码
+          Sk.misceval.asyncToPromise(function() {
+            return Sk.importMainWithBody("<stdin>", false, code, true);
+          }).catch(err => {
+            console.error(err);
+            document.getElementById('status').innerText = '运行出错: ' + err.toString();
+          });
+        })
+        .catch(err => {
+          document.getElementById('status').innerText = '加载文件失败: ' + err.message;
+        });
+    }
   </script>
 </body>
 </html>
