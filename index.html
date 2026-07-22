@@ -31,21 +31,21 @@
   </main>
   <script>
     const levels = [
-      ['HHHH1', 'Power Grid', 'Learn the maze and activate the switches.'],
-      ['HHHH2', 'Pure Chase', 'Outrun the enemy in a tighter chamber.'],
-      ['HHHH3', 'Frozen Orb', 'Use the frozen orb to escape pursuit.'],
-      ['HHHH4', 'Power Grid Plus', 'A tougher power-grid route.'],
-      ['HHHH5', 'Shield & Barrier', 'Place barriers and break through.'],
-      ['HHHH6', 'Code Gate', 'Find the key and open the final gate.'],
-      ['HHHH7', 'Final Gate', 'Survive the first Hell Mode chamber.'],
-      ['HHHH8', 'Final Gate Plus', 'More hazards, less room to recover.'],
-      ['HHHH9', 'Hell Mode', 'A fast, hostile final maze.'],
-      ['HHHH10', 'Hell Mode: Finale', 'The ultimate Three Chambers challenge.']
+      ['HHHH1.py', 'Power Grid', 'Learn the maze and activate the switches.'],
+      ['HHHH2.py', 'Pure Chase', 'Outrun the enemy in a tighter chamber.'],
+      ['HHHH3.py', 'Frozen Orb', 'Use the frozen orb to escape pursuit.'],
+      ['HHHH4.py', 'Power Grid Plus', 'A tougher power-grid route.'],
+      ['HHHH5.py', 'Shield & Barrier', 'Place barriers and break through.'],
+      ['HHHH6.py', 'Code Gate', 'Find the key and open the final gate.'],
+      ['HHHH7.py', 'Final Gate', 'Survive the first Hell Mode chamber.'],
+      ['HHHH8.py', 'Final Gate Plus', 'More hazards, less room to recover.'],
+      ['HHHH9.py', 'Hell Mode', 'A fast, hostile final maze.'],
+      ['HHHH10.py', 'Hell Mode: Finale', 'The ultimate Three Chambers challenge.']
     ];
     document.querySelector('#games').innerHTML = levels.map(([file, name, description], i) => `
       <article>
         <h2>${i + 1}. ${name}</h2><p>${description}</p>
-        <div class="actions"><a href="${file}.py">Play</a><a class="secondary" href="${file}.py" download="${file}.py">Python source</a></div>
+        <div class="actions"><a href="${file}">Play</a><a class="secondary" href="${file}" download="${file}">Python source</a></div>
       </article>`).join('');
   </script>
 </body>
