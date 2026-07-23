@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- 1. 请把下面的 "你的Google验证码" 替换为 Google Search Console 复制给你的实际字符串 -->
+  <a href="${level.file.replace('.py', '.html')}">Play</a>
   <meta name="google-site-verification" content="你的Google验证码" />
 
   <title>Green Block - 在线 Python 迷宫游戏</title>
