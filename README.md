@@ -55,7 +55,7 @@
         <h2>${level.name}</h2>
         <p>${level.desc}</p>
         <div class="actions">
-          <a href="game.html?file=${level.file}">Play</a>
+          <a href="${level.file.replace('.py', '.html')}">Play</a>
           <a class="secondary" href="${level.file}" download="${level.file}">Python source</a>
         </div>
       `;
